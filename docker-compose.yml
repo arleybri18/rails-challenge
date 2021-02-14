@@ -1,0 +1,40 @@
+version: "2"
+volumes:
+  joon-challenge-config: { driver: local }
+
+services:
+  # ----------------------------------------------------------------------------
+  # Third-party services
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    environment:
+      DEFAULT_HOST: "www.joon.test"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  # ----------------------------------------------------------------------------
+  # Joon services
+
+  joon-challenge:
+    build: ./
+    image: joon-challenge/ruby-2.7.2
+    command: ["rails", "server"]
+    environment:
+      VIRTUAL_HOST: "challenge.joon.test"
+      VIRTUAL_PORT: "3000"
+      BINDING: "0.0.0.0"
+      HOST: "0.0.0.0"    # HOST is getting deprecated. BINDING is the way fwd
+    expose:
+      - "3000"
+    volumes:
+      - "joon-challenge-config:/config"
+      - "./challenge:/app:cached"
+      - "/app/tmp/"
+      - "/app/log/"
+      - "/app/.bundle/"
+      - "/app/.git/"
+    links:
+      - nginx-proxy

@@ -1,0 +1,14 @@
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Start Date</th>
+  </tr>
+  <% @employees.each do |employee| %>
+    <tr>
+      <td><%= employee.name %></td>
+      <td><%= employee.email %></td>
+      <td><%= employee.start_date.to_date %></td>
+    </tr>
+  <% end %>
+</table>
