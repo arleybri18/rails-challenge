@@ -1,0 +1,45 @@
+#!/bin/bash
+
+CURRENT_PROJECT="joon-challenge"
+
+function find-running-container {
+  RUNNING_CONTAINER=$(docker ps | grep $1 | awk '{ print $1 }' | head -n 1)
+}
+
+function run-command {
+  find-running-container $CURRENT_PROJECT
+
+  if [[ -z $RUNNING_CONTAINER ]]; then
+    docker-compose run $CURRENT_PROJECT $@
+  else
+    echo -e "> Attaching to running container: $RUNNING_CONTAINER"
+    docker exec -it $RUNNING_CONTAINER $@
+  fi
+}
+
+function setup-challenge {
+  echo "I'm adding a new entry to your /etc/hosts and for that I need to sudo"
+  echo "If you're not comfortable with that, check this script's source"
+  echo "If that's not enough, run the steps manually"
+
+  echo "press anything to continue, ctrl-c to cancel"
+  read
+
+  cat /etc/hosts | grep "challenge.joon.test"
+  if [ $? == 1 ]; then
+    echo "Adding entry to /etc/hosts"
+    echo "127.0.0.1 challenge.joon.test" | sudo tee -a /etc/hosts
+  fi
+
+  echo -e "\n\n ---> Bundling...\n\n"
+  docker-compose run joon-challenge bundle install
+  echo -e "\n\n ---> Migrating...\n\n"
+  docker-compose run joon-challenge rails db:migrate
+  echo -e "\n\n ---> Seeding...\n\n"
+  docker-compose run joon-challenge rails db:seed
+}
+
+case $1 in
+  setup) shift ; setup-challenge ;;
+  start) shift ; run-command bash ;;
+esac
