@@ -5,7 +5,7 @@ class EmployeesController < ApplicationController
 
   def result
     respond_to do |format|
-      format.csv { send_data Employee.to_csv, filename: "employees_#{Time.now}.csv"}
+      format.csv { send_data Employee.to_csv, filename: "employees_#{Time.now}.csv", status: :ok }
     end
   end
 end
