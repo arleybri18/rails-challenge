@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe EmployeeInvite do
-  fixtures :employees, :employee_invites
+  fixtures :employee_invites
 
   let(:invite) { employee_invites(:invite_1) }
 

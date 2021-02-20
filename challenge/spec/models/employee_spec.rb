@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Employee do
-  fixtures :employees, :employee_invites, :benefits
+  fixtures :employees
 
   let(:employee) { employees(:employee_1) }
 
@@ -26,6 +26,10 @@ RSpec.describe Employee do
     it 'validate object creation' do
       expect(employee).to be_an_instance_of Employee
     end
+
+    it 'should return total benefit of employee' do
+      expect(employee.total_benefit).to eq(employee.benefits.sum(:amount))
+    end
   end
 
   context 'Validate CSV file generation' do
@@ -33,9 +37,10 @@ RSpec.describe Employee do
       csv_data = subject.class.to_csv.split("\n").map {|row| row.split(',') }
       months = Benefit.months.map { |m| m.strftime('%B-%Y') }
 
-      expect(csv_data[0]).to include('name')
-      expect(csv_data[0]).to include('email')
-      expect(csv_data[0]).to include('start_date')
+      expect(csv_data[0]).to include('Name')
+      expect(csv_data[0]).to include('Email')
+      expect(csv_data[0]).to include('Start date')
+      expect(csv_data[0]).to include('Total benefit')
       
       months.each do |month|
         expect(csv_data[0]).to include(month)
