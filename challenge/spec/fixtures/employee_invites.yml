@@ -4,9 +4,10 @@
 # model remove the '{}' from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-one:
-  name: Peter
-  email: peter@mysite.com
-  start_date: Date.today
-two: {}
-# column: value
+
+<% 5.times do |n| %>
+invite_<%= n %>:
+  name: <%= Faker::Name.name %>
+  email: <%= Faker::Internet.email %>
+  start_date: <%= n.months.ago.to_date %>
+<% end %>
