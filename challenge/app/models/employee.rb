@@ -3,6 +3,8 @@ class Employee < ApplicationRecord
   belongs_to :employee_invite
   has_many :benefits
 
+  # total_benefit - calculate total benefit of employee
+  # @return sum of amount benefits
   def total_benefit
     benefits.sum(:amount)
   end
